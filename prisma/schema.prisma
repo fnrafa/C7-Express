@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid()) @map("_id")
+  username  String
+  fullName  String
+  birthDate DateTime
+  gender    String
+  password  String
+  ratings   Rating[]
+  reviews   Review[]
+  histories History[]
+}
+
+model Restaurant {
+  id             String @id @default(uuid()) @map("_id")
+  name           String
+  address        String
+  longitude      Float
+  latitude       Float
+  operatingHours String
+  phoneNumber    String
+  foods          Food[]
+}
+
+model Food {
+  id           String         @id @default(uuid()) @map("_id")
+  restaurantId String
+  name         String
+  price        Float
+  photo        String
+  description  String
+  ratings      Rating[]
+  reviews      Review[]
+  histories    History[]
+  Restaurant   Restaurant     @relation(fields: [restaurantId], references: [id])
+  FoodCategory FoodCategory[]
+}
+
+model Rating {
+  id     String @id @default(uuid()) @map("_id")
+  userId String
+  foodId String
+  value  Float
+  user   User   @relation(fields: [userId], references: [id])
+  food   Food   @relation(fields: [foodId], references: [id])
+}
+
+model Review {
+  id      String @id @default(uuid()) @map("_id")
+  userId  String
+  foodId  String
+  message String
+  user    User   @relation(fields: [userId], references: [id])
+  food    Food   @relation(fields: [foodId], references: [id])
+}
+
+model Category {
+  id    String         @id @default(uuid()) @map("_id")
+  name  String
+  foods FoodCategory[]
+}
+
+model History {
+  id     String @id @default(uuid()) @map("_id")
+  userId String
+  foodId String
+  user   User   @relation(fields: [userId], references: [id])
+  food   Food   @relation(fields: [foodId], references: [id])
+}
+
+model FoodCategory {
+  id         String   @id @default(uuid()) @map("_id")
+  foodId     String
+  categoryId String
+  food       Food     @relation(fields: [foodId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+}
