@@ -3,83 +3,68 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String    @id @default(uuid()) @map("_id")
-  username  String
+  id        String    @id @default(uuid())
+  username  String    @unique
   fullName  String
-  birthDate DateTime
-  gender    String
-  password  String
-  ratings   Rating[]
-  reviews   Review[]
-  histories History[]
+  birthDate String    @default("2010-10-01T00:00:00.000Z")
+  gender    String    @default("unknown")
+  password  String    @default("")
+  role      String    @default("user")
+  deviceId  String    @unique
+  History   History[]
 }
 
 model Restaurant {
-  id             String @id @default(uuid()) @map("_id")
-  name           String
-  address        String
-  longitude      Float
-  latitude       Float
-  operatingHours String
-  phoneNumber    String
-  foods          Food[]
+  id         Int       @id @default(autoincrement())
+  name       String
+  address    String
+  region     String
+  openHours  String
+  openTime   String
+  closeTime  String
+  priceRange String
+  minPrice   Float
+  maxPrice   Float
+  avgPrice   Float
+  rating     Float
+  phone      String
+  typeId     Int
+  type       Type      @relation(fields: [typeId], references: [id])
+  menus      Menu[]
+  reviews    Review[]
+  History    History[]
 }
 
-model Food {
-  id           String         @id @default(uuid()) @map("_id")
-  restaurantId String
+model Menu {
+  id           Int        @id @default(autoincrement())
   name         String
-  price        Float
-  photo        String
-  description  String
-  ratings      Rating[]
-  reviews      Review[]
-  histories    History[]
-  Restaurant   Restaurant     @relation(fields: [restaurantId], references: [id])
-  FoodCategory FoodCategory[]
+  restaurants  Restaurant @relation(references: [id], fields: [restaurantId])
+  restaurantId Int
 }
 
-model Rating {
-  id     String @id @default(uuid()) @map("_id")
-  userId String
-  foodId String
-  value  Float
-  user   User   @relation(fields: [userId], references: [id])
-  food   Food   @relation(fields: [foodId], references: [id])
+model Type {
+  id         Int          @id @default(autoincrement())
+  name       String       @unique
+  restaurant Restaurant[]
 }
 
 model Review {
-  id      String @id @default(uuid()) @map("_id")
-  userId  String
-  foodId  String
-  message String
-  user    User   @relation(fields: [userId], references: [id])
-  food    Food   @relation(fields: [foodId], references: [id])
-}
-
-model Category {
-  id    String         @id @default(uuid()) @map("_id")
-  name  String
-  foods FoodCategory[]
+  id           Int        @id @default(autoincrement())
+  content      String     @db.Text
+  restaurants  Restaurant @relation(references: [id], fields: [restaurantId])
+  restaurantId Int
 }
 
 model History {
-  id     String @id @default(uuid()) @map("_id")
-  userId String
-  foodId String
-  user   User   @relation(fields: [userId], references: [id])
-  food   Food   @relation(fields: [foodId], references: [id])
-}
-
-model FoodCategory {
-  id         String   @id @default(uuid()) @map("_id")
-  foodId     String
-  categoryId String
-  food       Food     @relation(fields: [foodId], references: [id])
-  category   Category @relation(fields: [categoryId], references: [id])
+  id           Int        @id @default(autoincrement())
+  userId       String
+  restaurantId Int
+  accessedAt   DateTime   @default(now())
+  user         User       @relation(fields: [userId], references: [id])
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
 }

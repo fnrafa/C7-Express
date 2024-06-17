@@ -1,5 +1,6 @@
 node_modules/
 .idea/
 .env
+venv/
 package-lock.json
 prisma/migrations

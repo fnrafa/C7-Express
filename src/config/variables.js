@@ -14,7 +14,9 @@ const getEnvVariable = (key, defaultValue) => {
 
 const variables = {
     port: getEnvVariable('PORT', 3000),
-    secret: getEnvVariable('SECRET')
+    secret: getEnvVariable('SECRET'),
+    modelUrl: getEnvVariable('MODEL_URL'),
+    dataset: getEnvVariable('DATASET_PATH')
 };
 
 module.exports = variables;
