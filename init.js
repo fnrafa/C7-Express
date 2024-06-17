@@ -80,7 +80,6 @@ const initDatabase = async () => {
                         }
                     });
 
-                    // Create menus and connect them to the restaurant
                     await Promise.all(restaurant.menus.map(async menuName => {
                         await prisma.menu.create({
                             data: {
